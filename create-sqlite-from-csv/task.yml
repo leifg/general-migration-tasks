@@ -5,7 +5,8 @@ image_resource:
 
 inputs:
   - name: csv-files
+  - name: general-tasks
 
 run:
   path: ./run.sh
-  dir: ./create-sqlite-from-csv
+  dir: general-tasks/create-sqlite-from-csv

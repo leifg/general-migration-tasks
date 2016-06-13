@@ -1,1 +1,1 @@
-puts ARGV.inspect
+puts ARGV.map{|a| Dir.glob(a)}.flatten.inspect
