@@ -8,3 +8,4 @@ inputs:
 
 run:
   path: ./run.sh
+  dir: ./create-sqlite-from-csv
