@@ -4,8 +4,9 @@ require 'sqlite3'
 require 'csv'
 
 def setup_table(database, table_name, headers)
+  modified_headers = [:row_count] + headers
   database.create_table!(table_name) do
-    headers.each do |column|
+    modified_headers.each do |column|
       String column
     end
   end
@@ -13,8 +14,9 @@ end
 
 options = {
   encoding: 'UTF-8',
-  col_sep: ',',
+  col_sep: ','
 }
+
 OptionParser.new do |opts|
   opts.banner = 'Usage: example.rb [options]'
 
@@ -49,7 +51,7 @@ options[:files].each do |file|
   )
   setup_table(db, table_name, csv_table.headers)
   $stdout.puts("importing #{table_name}")
-  csv_table.each do |row|
-    db[table_name].insert(row.to_h)
+  csv_table.each_with_index do |row, index|
+    db[table_name].insert(row.to_h.merge(row_count: index + 1))
   end
 end
