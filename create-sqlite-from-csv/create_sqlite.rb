@@ -12,6 +12,13 @@ def setup_table(database, table_name, headers)
   end
 end
 
+def insert(database, table_name, row, index)
+  modified_row = row.map do |key, value|
+    [Sequel.identifier(key), value]
+  end.to_h
+  database[table_name].insert(modified_row.merge(row_count: index + 1))
+end
+
 options = {
   encoding: 'UTF-8',
   col_sep: ','
@@ -42,6 +49,7 @@ db = Sequel.connect("sqlite://#{db_filename}")
 #
 options[:files].each do |file|
   table_name = File.basename(file, File.extname(file)).to_sym
+  $stdout.puts("Reading CSV for #{table_name}")
   csv_table = CSV.read(
     file,
     headers: true,
@@ -49,9 +57,9 @@ options[:files].each do |file|
     col_sep: options[:col_sep],
     encoding: options[:encoding]
   )
+  $stdout.puts("Importing #{table_name}")
   setup_table(db, table_name, csv_table.headers)
-  $stdout.puts("importing #{table_name}")
   csv_table.each_with_index do |row, index|
-    db[table_name].insert(row.to_h.merge(row_count: index + 1))
+    insert(db, table_name, row, index)
   end
 end
